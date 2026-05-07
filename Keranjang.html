@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja - Struk</title>
+
+    <style>
+        body {
+            background: #8e44ad;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .struk {
+            width: 350px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #6a1b9a;
+            margin-bottom: 5px;
+        }
+
+        .tanggal {
+            text-align: center;
+            font-size: 12px;
+            color: gray;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            border-bottom: 2px solid #6a1b9a;
+            text-align: left;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 8px;
+            font-size: 14px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .total-row {
+            font-weight: bold;
+            color: green;
+        }
+
+        .btn-area {
+            margin-top: 15px;
+        }
+
+        .btn-cetak {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #6a1b9a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn-kembali {
+            display: block;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            background: #f1f1f1;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .btn-cetak:hover { background: #4a148c; }
+        .btn-kembali:hover { background: #ddd; }
+
+        @media print {
+            body { background: white; }
+            .btn-area { display: none; }
+            .struk { box-shadow: none; margin: 0; width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="struk">
+    <h2>Struk Pembayaran</h2>
+    <p id="info-tanggal" class="tanggal"></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Qty</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="wadah-item">
+            <!-- Item akan muncul di sini via JS -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2" style="padding-top:10px;"><b>Total Akhir</b></td>
+                <td class="total-row" id="total-bayar" style="padding-top:10px;">Rp 0</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="btn-area">
+        <button class="btn-cetak" onclick="window.print()">🖨️ Cetak Struk</button>
+        <a href="index.html" class="btn-kembali"> Kembali Belanja</a>
+    </div>
+</div>
+
+<script>
+    // 1. Set Tanggal Otomatis
+    const tgl = new Date();
+    document.getElementById('info-tanggal').innerText = "Tanggal: " + tgl.toLocaleString('id-ID');
+
+    // 2. Ambil data dari localStorage (Kunci harus sama dengan index.html)
+    const keranjang = JSON.parse(localStorage.getItem('keranjangBuku')) || [];
+    const tabel = document.getElementById('wadah-item');
+    let totalHarga = 0;
+
+    // 3. Tampilkan data
+    if (keranjang.length === 0) {
+        tabel.innerHTML = "<tr><td colspan='3' style='text-align:center;'>Keranjang masih kosong</td></tr>";
+    } else {
+        keranjang.forEach(item => {
+            const subtotal = item.harga * item.jumlah;
+            totalHarga += subtotal;
+
+            tabel.innerHTML += `
+                <tr>
+                    <td>${item.nama}</td>
+                    <td>${item.jumlah}</td>
+                    <td>Rp ${subtotal.toLocaleString('id-ID')}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // 4. Update Total
+    document.getElementById('total-bayar').innerText = "Rp " + totalHarga.toLocaleString('id-ID');
+</script>
+
+</body>
+</html>
