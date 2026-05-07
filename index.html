@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Buku</title>
+    <style>
+        body {
+            background-color: #8e44ad;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6a1b9a;
+        }
+
+        .keranjang-link {
+            display: block;
+            text-align: right;
+            margin-bottom: 15px;
+            color: #6a1b9a;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .produk {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            gap: 15px;
+        }
+
+        .produk img {
+            width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            background: #eee;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .harga {
+            color: green;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            background: #6a1b9a;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #4a148c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Toko Buku Cerita & Novel</h1>
+
+    <a class="keranjang-link" href="struk.html">
+        🛒 Lihat Keranjang (<span id="total-item">0</span>)
+    </a>
+
+    <div id="daftar-produk">
+        <!-- Produk akan muncul di sini via JavaScript -->
+    </div>
+</div>
+
+<script>
+    // Data Produk
+    const produk = [
+        { id: 1, nama: "Cerita Anak Nusantara", harga: 50000, gambar: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200&h=300&fit=crop" },
+        { id: 2, nama: "Dongeng Sebelum Tidur", harga: 45000, gambar: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop" },
+        { id: 3, nama: "Novel Cinta Remaja", harga: 75000, gambar: "https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=200&h=300&fit=crop" },
+        { id: 4, nama: "Novel Petualangan Dunia", harga: 80000, gambar: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200&h=300&fit=crop" }
+    ];
+
+    // Inisialisasi Keranjang dari LocalStorage
+    let keranjang = JSON.parse(localStorage.getItem('keranjang Buku')) || [];
+
+    function tampilkanProduk() {
+        const wadah = document.getElementById('daftar-produk');
+        wadah.innerHTML = '';
+
+        produk.forEach(p => {
+            wadah.innerHTML += `
+                <div class="produk">
+                    <img src="${p.gambar}" alt="${p.nama}">
+                    <div class="info">
+                        <h3>${p.nama}</h3>
+                        <p class="harga">Rp ${p.harga.toLocaleString('id-ID')}</p>
+                    </div>
+                    <button class="btn" onclick="tambahKeKeranjang(${p.id})">Tambah</button>
+                </div>
+            `;
+        });
+        updateBadge();
+    }
+
+    function tambahKeKeranjang(id) {
+        const itemDitemukan = produk.find(p => p.id === id);
+        const itemDiKeranjang = keranjang.find(k => k.id === id);
+
+        if (itemDiKeranjang) {
+            itemDiKeranjang.jumlah += 1;
+        } else {
+            keranjang.push({ ...itemDitemukan, jumlah: 1 });
+        }
+
+        localStorage.setItem('keranjangBuku', JSON.stringify(keranjang));
+        updateBadge();
+        alert(itemDitemukan.nama + " berhasil ditambah!");
+    }
+
+    function updateBadge() {
+        const total = keranjang.reduce((sum, item) => sum + item.jumlah, 0);
+        document.getElementById('total-item').innerText = total;
+    }
+
+    // Jalankan saat halaman dibuka
+    tampilkanProduk();
+</script>
+
+</body>
+</html>
